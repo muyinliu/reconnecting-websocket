@@ -61,13 +61,13 @@ Note: the nickname of package `reconnecting-websocket` is `rws`
 
 
 ## APIs
-### [Class] reconnecting-websocket
+### [Class] `rws:reconnecting-websocket`
 The base class for auto-reconnect WebSocket client, a wrapper of [websocket-driver-client](https://github.com/fukamachi/websocket-driver)
 
-### [Event] :open :message :error :close
+### [Event] `:open` `:message` `:error` `:close`
 The same event as websocket-driver-client's
 
-#### [Method] (rws:on rws-client event handler)
+#### [Method] `(rws:on rws-client event handler)`
 ```lisp
 (rws:on rws-client event handler)
 ```
@@ -77,51 +77,51 @@ for example:
 (rws:on rws-client :open #'(lambda () (format t "onopen~%")))
 ```
 
-#### [Method] (rws:remove-listener rws-client event handler)
+#### [Method] `(rws:remove-listener rws-client event handler)`
 
-#### [Method] (rws:remove-all-listeners rws-client &optional event)
+#### [Method] `(rws:remove-all-listeners rws-client &optional event)`
 
 
-### [Method] (rws:start-connection rws-client)
+### [Method] `(rws:start-connection rws-client)`
 Manually start a WebSocket connection. 
 Note: by default reconnecting-websocket auto start-connection without option `:auto-open-p nil`
 
-### [Method] (rws:send rws-client &key start end type code callback)
+### [Method] `(rws:send rws-client &key start end type code callback)`
 
-### [Method] (rws:send-text rws-client message &key start end callback)
+### [Method] `(rws:send-text rws-client message &key start end callback)`
 
-### [Method] (rws:send-binary rws-client usb8-vector &key start end callback)
+### [Method] `(rws:send-binary rws-client usb8-vector &key start end callback)`
 
-### [Method] (rws:send-ping rws-client &optional message callback)
+### [Method] `(rws:send-ping rws-client &optional message callback)`
 
-### [Method] (rws:close-connection rws-client)
+### [Method] `(rws:close-connection rws-client)`
 Manually close a WebSocket connection and will NOT auto-reconnect again.
 
-### [Method] (rws:url rws-client)
+### [Method] `(rws:url rws-client)`
 Readonly
 
-### [Method] (rws:debug-p rws-client)
+### [Method] `(rws:debug-p rws-client)`
 Trun on/off debug message output to `*debug-io*`
 
-### [Method] (rws:auto-open-p rws-client)
+### [Method] `(rws:auto-open-p rws-client)`
 Default: `t`
 
-### [Method] (rws:reconnect-interval rws-client)
+### [Method] `(rws:reconnect-interval rws-client)`
 Default: 1(s)
 
-### [Method] (rws:max-reconnect-interval rws-client)
+### [Method] `(rws:max-reconnect-interval rws-client)`
 Default: 30(s)
 
-### [Method] (rws:reconnect-decay rws-client)
+### [Method] `(rws:reconnect-decay rws-client)`
 Default: 1.5
 
-### [Method] (rws:max-reconnect-attempts rws-client)
+### [Method] `(rws:max-reconnect-attempts rws-client)`
 Default: nil, reconnect forever
 
-### [Method] (rws:client rws-client)
+### [Method] `(rws:client rws-client)`
 Return websocket-driver-client
 
-### [Method] (rws:event-listeners rws-client)
+### [Method] `(rws:event-listeners rws-client)`
 Return a property list like this:
 ```
 '(:open (#'(lambda () xxx))
@@ -130,7 +130,7 @@ Return a property list like this:
   :error (#'(lambda () aaa)))
 ```
 
-### [Method] (rws:ready-state rws-client)
+### [Method] `(rws:ready-state rws-client)`
 Return WebSocket client's current ready-state, one of `:connecting` `:open` `:closed`
 
 
