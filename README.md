@@ -62,7 +62,12 @@ Note: the nickname of package `reconnecting-websocket` is `rws`
 
 ## APIs
 ### [Class] `rws:reconnecting-websocket`
-The base class for auto-reconnect WebSocket client, a wrapper of [websocket-driver-client](https://github.com/fukamachi/websocket-driver)
+The base class for auto-reconnect WebSocket client, a wrapper
+of
+[websocket-driver-client](https://github.com/fukamachi/websocket-driver)
+
+### [Function] `(rws:make-reconnecting-websocket url &key debug-p auto-open-p reconnect-interval max-reconnect-interval reconnect-decay max-reconnect-attempts event-listeners)`
+Create an auto-reconnect WebSocket client.
 
 ### [Event] `:open` `:message` `:error` `:close`
 The same event as websocket-driver-client's

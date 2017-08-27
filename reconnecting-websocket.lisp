@@ -2,6 +2,7 @@
   (:use :cl)
   (:nicknames :rws)
   (:export #:reconnecting-websocket
+           #:make-reconnecting-websocket
            #:url
            #:debug-p
            #:auto-open-p
@@ -16,6 +17,8 @@
            #:start-connection
            #:close-connection
            #:on
+           #:remove-listener
+           #:remove-all-listeners
            #:send
            #:send-text
            #:send-binary
@@ -68,6 +71,25 @@
    (ready-state
     :accessor ready-state
     :initform :connecting)))
+
+(defun make-reconnecting-websocket (url
+                                    &key
+                                      (debug-p nil)
+                                      (auto-open-p t)
+                                      (reconnect-interval 1)
+                                      (max-reconnect-interval 30)
+                                      (reconnect-decay 1.5)
+                                      max-reconnect-attempts
+                                      event-listeners)
+  (make-instance 'reconnecting-websocket
+                 :url url
+                 :debug-p debug-p
+                 :auto-open-p auto-open-p
+                 :reconnect-interval reconnect-interval
+                 :max-reconnect-interval max-reconnect-interval
+                 :reconnect-decay reconnect-decay
+                 :max-reconnect-attempts max-reconnect-attempts
+                 :event-listeners event-listeners))
 
 (defmethod initialize-instance :after ((client reconnecting-websocket) &key)
   (when (auto-open-p client)
@@ -239,6 +261,7 @@
                   (url client)
                   usb8-vector))
         (wsd:send-binary (client client)
+                         usb8-vector
                          :start start
                          :end end
                          :callback callback))
@@ -252,7 +275,5 @@
           (format *debug-io* "ReconnectingWebSocket send-ping ~S ~S~%"
                   (url client)
                   message))
-        (wsd:send-ping (client client)
-                       :message message
-                       :callback callback))
+        (wsd:send-ping (client client) message callback))
       (error "INVALID_STATE_ERR : Pausing to reconnect websocket")))
