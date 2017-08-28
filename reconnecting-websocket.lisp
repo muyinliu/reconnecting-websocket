@@ -121,7 +121,7 @@
             (format *debug-io* "~A~%" reason))
           (close-connection client reason)
           (dolist (listener (getf (event-listeners client) :error))
-            (funcall listener reason)))
+            (funcall listener client reason)))
         (return-from start-connection))
       (progn
         ;; eventTarget.dispatchEvent(generateEvent('connecting'));
@@ -139,7 +139,7 @@
               (setf reconnect-attempt-p nil)
               ;; dispatch :open event
               (dolist (listener (getf (event-listeners client) :open))
-                (funcall listener))))
+                (funcall listener client))))
   (wsd:on :close (client client) 
           #'(lambda (&key code reason)
               (setf (client client) nil)
@@ -148,7 +148,7 @@
                     (setf (ready-state client) :closed)
                     ;; dispatch :closed event
                     (dolist (listener (getf (event-listeners client) :close))
-                      (funcall listener :code code :reason reason)))
+                      (funcall listener client :code code :reason reason)))
                   (progn
                     (setf (ready-state client) :connecting)
                     (when (not reconnect-attempt-p)
@@ -160,7 +160,7 @@
                                 reason))
                       ;; dispatch :close event
                       (dolist (listener (getf (event-listeners client) :close))
-                        (funcall listener :code code :reason reason)))
+                        (funcall listener client :code code :reason reason)))
                     (let* ((interval (* (reconnect-interval client)
                                         (expt (reconnect-decay client)
                                               (reconnect-attempts client))))
@@ -184,7 +184,7 @@
                         message))
               ;; dispatch :message event
               (dolist (listener (getf (event-listeners client) :message))
-                (funcall listener message))))
+                (funcall listener client message))))
   (wsd:on :error (client client)
           #'(lambda (error)
               (when (debug-p client)
@@ -193,7 +193,7 @@
                         error))
               ;; dispatch :error event
               (dolist (listener (getf (event-listeners client) :error))
-                (funcall listener error))))
+                (funcall listener client error))))
   (handler-case
       (wsd:start-connection (client client))
     (error (condition)
@@ -201,6 +201,7 @@
         (format *debug-io* "ReconnectingWebSocket start-connection error ~S~%"
                 condition))
       (event-emitter:emit :close (client client)))))
+
 
 (defmethod on ((client reconnecting-websocket) event handler)
   (pushnew handler (getf (event-listeners client) event)))

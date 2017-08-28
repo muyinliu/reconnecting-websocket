@@ -36,15 +36,19 @@ Note: the nickname of package `reconnecting-websocket` is `rws`
 
 ```lisp
 (defvar *rws-event-listeners*
-  (list :open (list #'(lambda ()
+  (list :open (list #'(lambda (client)
+                        (declare (ignorable client))
                         (format t "onopen~%")))
-        :message (list #'(lambda (message)
+        :message (list #'(lambda (client message)
+                           (declare (ignorable client))
                            (format t "onmessage: ~S~%"
                                    (babel:octets-to-string message :encoding :utf-8))))
-        :close (list #'(lambda (&key code reason)
+        :close (list #'(lambda (client &key code reason)
+                         (declare (ignorable client))
                          (format t "onclose: code: ~S, reason: ~S~%"
                                  code reason)))
-        :error (list #'(lambda (error)
+        :error (list #'(lambda (client error)
+                         (declare (ignorable client))
                          (format t "onerror: ~S~%" error)))))
 
 (defvar *rws-client* (make-instance 'rws:reconnecting-websocket
@@ -55,8 +59,9 @@ Note: the nickname of package `reconnecting-websocket` is `rws`
 
 ;; bind more listener
 (rws:on *rws-client*
-        :open #'(lambda ()
-                  (format t "onopen event~%")))                                   
+        :open #'(lambda (client)
+                  (declare (ignorable client))
+                  (format t "onopen event~%")))
 ```
 
 
@@ -79,7 +84,25 @@ The same event as websocket-driver-client's
 
 for example:
 ```lisp
-(rws:on rws-client :open #'(lambda () (format t "onopen~%")))
+(rws:on rws-client
+        :open
+        #'(lambda (client)
+            (format t "onopen: ~S~%" client)))
+(rws:on rws-client
+        :message
+        #'(lambda (client message)
+            (format t "onmessage: ~S, ~S~%"
+                    client message)))
+(rws:on rws-client
+        :error
+        #'(lambda (client error) 
+            (format t "onerror:~S, ~S~%"
+                    client error)))
+(rws:on rws-client
+        :close
+        #'(lambda (client &key code reason)
+            (format t "onclose: ~S, code: ~S, reason: ~S~%"
+                    client code reason)))
 ```
 
 #### [Method] `(rws:remove-listener rws-client event handler)`

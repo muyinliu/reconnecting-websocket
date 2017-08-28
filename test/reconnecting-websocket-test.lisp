@@ -64,7 +64,8 @@
   (with-websocket-server
     (let* ((reconnect-too-many-times-p nil)
            (event-listeners (list :error
-                                  (list #'(lambda (error)
+                                  (list #'(lambda (client error)
+                                            (declare (ignorable client))
                                             (when (equal error "ReconnectingWebSocket attempt-connect too many times: 2
 ")
                                              (setf reconnect-too-many-times-p t)))))))
@@ -85,14 +86,17 @@
       (is (with-output-to-string (stream)
             (let ((event-listeners
                    (list :open
-                         (list #'(lambda ()
+                         (list #'(lambda (client)
+                                   (declare (ignorable client))
                                    (format stream "onopen~%")))
                          :message
-                         (list #'(lambda (message)
+                         (list #'(lambda (client message)
+                                   (declare (ignorable client))
                                    (format stream "onmessage: ~A~%"
                                            (babel:octets-to-string message :encoding :utf-8))))
                          :close
-                         (list #'(lambda (&key code reason)
+                         (list #'(lambda (client &key code reason)
+                                   (declare (ignorable client))
                                    (format stream "onclose: ~A ~A~%"
                                            code reason))))))
               (with-websocket-client (client :url "ws://localhost:5000/ws"
@@ -111,14 +115,17 @@
       (is (with-output-to-string (stream)
             (let ((event-listeners
                    (list :open
-                         (list #'(lambda ()
+                         (list #'(lambda (client)
+                                   (declare (ignorable client))
                                    (format stream "onopen~%")))
                          :message
-                         (list #'(lambda (message)
+                         (list #'(lambda (client message)
+                                   (declare (ignorable client))
                                    (format stream "onmessage: ~A~%"
                                            (babel:octets-to-string message :encoding :utf-8))))
                          :close
-                         (list #'(lambda (&key code reason)
+                         (list #'(lambda (client &key code reason)
+                                   (declare (ignorable client))
                                    (format stream "onclose: ~A ~A~%"
                                            code reason))))))
               (with-websocket-client (client :url "ws://localhost:5000/ws"
